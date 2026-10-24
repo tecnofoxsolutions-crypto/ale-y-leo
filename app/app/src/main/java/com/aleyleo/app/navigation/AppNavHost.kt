@@ -15,6 +15,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.aleyleo.app.viewmodel.CarroViewModel
 import com.aleyleo.app.view.admin.AdminCategoriasScreen
 import com.aleyleo.app.view.admin.AdminDetallePedidoScreen
 import com.aleyleo.app.view.admin.AdminPedidosScreen
@@ -39,8 +42,12 @@ import com.aleyleo.app.view.perfil.PerfilScreen
 // y muestra la barra inferior solo en las pantallas principales de cada rol.
 @Composable
 fun AppNavHost(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    carroViewModel: CarroViewModel = viewModel()
 ) {
+    // Cantidad de unidades en el carro, para el número sobre el ícono "Carro".
+    val cantidadCarro by carroViewModel.cantidadTotal.collectAsStateWithLifecycle()
+
     val entradaActual by navController.currentBackStackEntryAsState()
     val rutaActual = entradaActual?.destination?.route
 
@@ -53,7 +60,12 @@ fun AppNavHost(
     Scaffold(
         bottomBar = {
             if (pestanas != null) {
-                BarraInferior(navController, pestanas, rutaActual)
+                BarraInferior(
+                    navController = navController,
+                    pestanas = pestanas,
+                    rutaActual = rutaActual,
+                    insignias = mapOf(Rutas.CARRO to cantidadCarro)
+                )
             }
         }
     ) { innerPadding ->

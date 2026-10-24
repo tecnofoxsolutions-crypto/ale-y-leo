@@ -28,14 +28,17 @@ import com.aleyleo.app.view.componentes.EstadoVacio
 import com.aleyleo.app.view.componentes.PantallaBase
 import com.aleyleo.app.view.componentes.TarjetaArtesania
 import com.aleyleo.app.viewmodel.CatalogoViewModel
+import com.aleyleo.app.viewmodel.FavoritosViewModel
 
 // P04 Catálogo: buscador, chips de categoría y grilla de artesanías.
 @Composable
 fun CatalogoScreen(
     onVerDetalle: (Int) -> Unit,
-    catalogoViewModel: CatalogoViewModel = viewModel()
+    catalogoViewModel: CatalogoViewModel = viewModel(),
+    favoritosViewModel: FavoritosViewModel = viewModel()
 ) {
     val uiState by catalogoViewModel.uiState.collectAsStateWithLifecycle()
+    val idsFavoritos by favoritosViewModel.idsFavoritos.collectAsStateWithLifecycle()
     val busqueda by catalogoViewModel.busqueda.collectAsStateWithLifecycle()
 
     // Al cambiar el chip o la búsqueda, la grilla vuelve al principio.
@@ -70,9 +73,9 @@ fun CatalogoScreen(
                 items(uiState.artesanias, key = { it.id }) { artesania ->
                     TarjetaArtesania(
                         artesania = artesania,
-                        esFavorito = false,      // AP-08 conecta los favoritos con Room
+                        esFavorito = artesania.id in idsFavoritos,
                         onClick = { onVerDetalle(artesania.id) },
-                        onFavoritoClick = { }    // AP-08
+                        onFavoritoClick = { favoritosViewModel.alternarFavorito(artesania) }
                     )
                 }
             }

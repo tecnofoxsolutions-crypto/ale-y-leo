@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey
 data class ItemCarro(
     @PrimaryKey
     val artesaniaId: Int,
+    val categoriaId: Int,  // para mostrar la imagen
     val nombre: String,
     val precioUnitario: Int,
     val cantidad: Int,

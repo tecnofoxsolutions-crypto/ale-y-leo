@@ -8,6 +8,8 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Storefront
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -42,14 +44,27 @@ val pestanasAdmin = listOf(
 fun BarraInferior(
     navController: NavHostController,
     pestanas: List<ItemBarra>,
-    rutaActual: String?
+    rutaActual: String?,
+    insignias: Map<String, Int> = emptyMap() // número sobre el ícono, por ruta (ej. carro)
 ) {
     NavigationBar {
         pestanas.forEach { pestana ->
             NavigationBarItem(
                 selected = rutaActual == pestana.ruta,
                 onClick = { irAPestana(navController, pestana.ruta, pestanas.first().ruta) },
-                icon = { Icon(pestana.icono, contentDescription = pestana.etiqueta) },
+                icon = {
+                    val numero = insignias[pestana.ruta] ?: 0
+                    // BadgedBox pone un círculo con el número sobre el ícono.
+                    BadgedBox(
+                        badge = {
+                            if (numero > 0) {
+                                Badge { Text("$numero") }
+                            }
+                        }
+                    ) {
+                        Icon(pestana.icono, contentDescription = pestana.etiqueta)
+                    }
+                },
                 label = { Text(pestana.etiqueta) }
             )
         }
