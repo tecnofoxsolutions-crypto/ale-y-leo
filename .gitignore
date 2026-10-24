@@ -1,0 +1,16 @@
+# Android
+app/.gradle/
+app/build/
+app/app/build/
+app/local.properties
+app/.idea/
+app/.kotlin/
+*.iml
+
+# Backend (Spring Boot)
+backend/build/
+backend/.gradle/
+backend/.idea/
+backend/uploads/
+
+.DS_Store
