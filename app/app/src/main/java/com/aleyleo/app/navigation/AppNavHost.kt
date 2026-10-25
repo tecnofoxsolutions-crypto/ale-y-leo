@@ -89,11 +89,13 @@ private fun NavGraphBuilder.grafoAuth(navController: NavHostController) {
 
         composable(Rutas.SPLASH) {
             SplashScreen(
-                onTerminado = {
+                onSinSesion = {
                     navController.navigate(Rutas.LOGIN) {
                         popUpTo(Rutas.SPLASH) { inclusive = true } // "volver" no regresa al splash
                     }
-                }
+                },
+                onCliente = { entrarAGrafo(navController, Rutas.GRAFO_CLIENTE) },
+                onAdmin = { entrarAGrafo(navController, Rutas.GRAFO_ADMIN) }
             )
         }
 

@@ -1,7 +1,6 @@
 package com.aleyleo.app.view.perfil
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -11,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.aleyleo.app.view.componentes.CampoTexto
 import com.aleyleo.app.view.componentes.PantallaBase
 import com.aleyleo.app.viewmodel.PerfilViewModel
 
@@ -74,25 +74,4 @@ fun EditarPerfilScreen(
             Text("Guardar")
         }
     }
-}
-
-// Campo de texto con su mensaje de error debajo. Lo reutiliza el Registro (AP-06).
-@Composable
-fun CampoTexto(
-    valor: String,
-    onCambiar: (String) -> Unit,
-    etiqueta: String,
-    error: String?,
-    tipoTeclado: KeyboardType = KeyboardType.Text
-) {
-    OutlinedTextField(
-        value = valor,
-        onValueChange = onCambiar,
-        label = { Text(etiqueta) },
-        isError = error != null,
-        supportingText = { error?.let { Text(it) } },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = tipoTeclado),
-        modifier = Modifier.fillMaxWidth()
-    )
 }
