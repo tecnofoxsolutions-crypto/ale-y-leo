@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 // en la entrega final llamará a POST /api/auth/login y guardará el token JWT.
 object AuthRepository {
 
-    private val usuarios = DatosPrueba.usuarios
+    private var usuarios = DatosPrueba.usuarios
     private val contrasenas = DatosPrueba.contrasenas
 
     // Usuario con sesión iniciada (null = nadie conectado).
@@ -26,6 +26,21 @@ object AuthRepository {
             return usuario
         }
         return null
+    }
+
+    // PUT /api/usuarios/me: guarda los datos editables del perfil (email y RUT no cambian).
+    fun actualizarPerfil(nombreCompleto: String, telefono: String, direccion: String, comuna: String): Usuario? {
+        val actual = _sesion.value ?: return null
+
+        val actualizado = actual.copy(
+            nombreCompleto = nombreCompleto.trim(),
+            telefono = telefono.replace(" ", ""),
+            direccion = direccion.trim(),
+            comuna = comuna.trim()
+        )
+        usuarios = usuarios.map { if (it.id == actual.id) actualizado else it }
+        _sesion.value = actualizado
+        return actualizado
     }
 
     fun cerrarSesion() {
