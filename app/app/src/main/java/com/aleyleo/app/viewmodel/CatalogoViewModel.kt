@@ -25,6 +25,9 @@ class CatalogoViewModel : ViewModel() {
 
     private val repository = CatalogoRepository
 
+    // Todas las artesanías sin filtrar (el Detalle la observa para ver el stock al día).
+    val artesanias: StateFlow<List<Artesania>> = repository.artesanias
+
     private val _categoriaSeleccionada = MutableStateFlow<Int?>(null)
 
     // El texto del buscador va en su propio StateFlow para que el campo responda al instante.

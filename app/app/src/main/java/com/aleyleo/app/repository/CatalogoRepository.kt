@@ -6,6 +6,7 @@ import com.aleyleo.app.model.Categoria
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 // Repositorio del catálogo. En la E2 lee de DatosPrueba (en memoria);
 // en la entrega final, por dentro llamará a la API con Retrofit.
@@ -24,5 +25,18 @@ object CatalogoRepository {
 
     fun obtenerCategoria(id: Int): Categoria? {
         return _categorias.value.find { it.id == id }
+    }
+
+    // Lo usa el pago de un pedido. update reemplaza la lista y avisa a todas las pantallas.
+    fun descontarStock(artesaniaId: Int, cantidad: Int) {
+        _artesanias.update { lista ->
+            lista.map { if (it.id == artesaniaId) it.copy(stock = it.stock - cantidad) else it }
+        }
+    }
+
+    // Vuelve a los datos iniciales (lo usan las pruebas unitarias).
+    fun reiniciar() {
+        _categorias.value = DatosPrueba.categorias
+        _artesanias.value = DatosPrueba.artesanias
     }
 }

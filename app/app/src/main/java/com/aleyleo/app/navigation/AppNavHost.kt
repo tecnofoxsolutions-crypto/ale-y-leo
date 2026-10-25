@@ -153,7 +153,7 @@ private fun NavGraphBuilder.grafoCliente(navController: NavHostController) {
                 onVolver = { navController.popBackStack() },
                 onPedidoGenerado = { pedidoId ->
                     navController.navigate(Rutas.pago(pedidoId)) {
-                        popUpTo(Rutas.CARRO) // saca el checkout de la pila
+                        popUpTo(Rutas.CHECKOUT) { inclusive = true } // saca el checkout de la pila
                     }
                 }
             )
@@ -168,10 +168,10 @@ private fun NavGraphBuilder.grafoCliente(navController: NavHostController) {
                 pedidoId = pedidoId,
                 onPagado = { id ->
                     navController.navigate(Rutas.confirmacion(id)) {
-                        popUpTo(Rutas.CARRO) // después de pagar no se vuelve a la pantalla de pago
+                        popUpTo(Rutas.PAGO) { inclusive = true } // después de pagar no se vuelve a la pantalla de pago
                     }
                 },
-                onCancelado = { irAPestana(navController, Rutas.MIS_PEDIDOS, Rutas.CATALOGO) }
+                onCancelado = { salirDelFlujoDeCompra(navController, Rutas.MIS_PEDIDOS) }
             )
         }
 
@@ -182,8 +182,8 @@ private fun NavGraphBuilder.grafoCliente(navController: NavHostController) {
             val pedidoId = entrada.arguments?.getInt(Rutas.ARG_PEDIDO_ID) ?: 0
             ConfirmacionScreen(
                 pedidoId = pedidoId,
-                onVerMisPedidos = { irAPestana(navController, Rutas.MIS_PEDIDOS, Rutas.CATALOGO) },
-                onSeguirComprando = { irAPestana(navController, Rutas.CATALOGO, Rutas.CATALOGO) }
+                onVerMisPedidos = { salirDelFlujoDeCompra(navController, Rutas.MIS_PEDIDOS) },
+                onSeguirComprando = { salirDelFlujoDeCompra(navController, Rutas.CATALOGO) }
             )
         }
 
@@ -280,6 +280,16 @@ private fun NavGraphBuilder.grafoAdmin(navController: NavHostController) {
 private fun entrarAGrafo(navController: NavHostController, grafo: String) {
     navController.navigate(grafo) {
         popUpTo(Rutas.GRAFO_AUTH) { inclusive = true }
+    }
+}
+
+// Al terminar o cancelar una compra: vuelve a una pestaña y DESCARTA las pantallas del flujo
+// (checkout, pago, confirmación). A diferencia de irAPestana, no guarda ese estado,
+// así la pestaña Carro no vuelve a mostrar la confirmación.
+private fun salirDelFlujoDeCompra(navController: NavHostController, ruta: String) {
+    navController.navigate(ruta) {
+        popUpTo(Rutas.CATALOGO)
+        launchSingleTop = true
     }
 }
 

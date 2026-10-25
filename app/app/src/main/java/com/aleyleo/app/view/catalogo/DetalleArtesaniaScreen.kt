@@ -49,8 +49,9 @@ fun DetalleArtesaniaScreen(
     favoritosViewModel: FavoritosViewModel = viewModel(),
     carroViewModel: CarroViewModel = viewModel()
 ) {
-    // remember: busca la artesanía una sola vez, no en cada redibujo.
-    val artesania = remember(artesaniaId) { catalogoViewModel.obtenerArtesania(artesaniaId) }
+    // Observa el catálogo: si el stock cambia (por ejemplo, al pagar un pedido), la pantalla se actualiza.
+    val artesanias by catalogoViewModel.artesanias.collectAsStateWithLifecycle()
+    val artesania = artesanias.find { it.id == artesaniaId }
     val idsFavoritos by favoritosViewModel.idsFavoritos.collectAsStateWithLifecycle()
 
     // Estado local de la pantalla (no es dato del negocio): la cantidad elegida.
