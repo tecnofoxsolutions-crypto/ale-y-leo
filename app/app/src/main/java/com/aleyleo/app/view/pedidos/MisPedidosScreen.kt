@@ -26,6 +26,7 @@ import com.aleyleo.app.view.componentes.ChipEstado
 import com.aleyleo.app.view.componentes.EstadoVacio
 import com.aleyleo.app.view.componentes.PantallaBase
 import com.aleyleo.app.viewmodel.PedidosViewModel
+import com.aleyleo.app.R
 
 // P11 Mis pedidos: lista con código, fecha, total y chip de estado (HU-12).
 @Composable
@@ -39,7 +40,7 @@ fun MisPedidosScreen(
         if (misPedidos.isEmpty()) {
             EstadoVacio(
                 mensaje = "Aún no tienes pedidos.\nCuando compres algo, lo verás aquí.",
-                icono = Icons.AutoMirrored.Filled.ReceiptLong
+                ilustracion = R.drawable.ilustracion_carrete
             )
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {

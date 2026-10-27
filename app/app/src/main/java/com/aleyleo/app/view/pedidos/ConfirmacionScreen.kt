@@ -22,6 +22,9 @@ import com.aleyleo.app.view.componentes.LineaResumen
 import com.aleyleo.app.view.componentes.PantallaBase
 import com.aleyleo.app.view.componentes.ResumenCompra
 import com.aleyleo.app.viewmodel.PedidosViewModel
+import com.aleyleo.app.R
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 
 // P10 Confirmación: el pedido quedó PAGADO.
 @Composable
@@ -40,12 +43,12 @@ fun ConfirmacionScreen(
             return@PantallaBase
         }
 
-        Icon(
-            imageVector = Icons.Filled.CheckCircle,
+        // Sello de Emanuel: el pedido queda "timbrado" como pagado.
+        Image(
+            painter = painterResource(R.drawable.sello),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier
-                .size(72.dp)
+                .size(180.dp)
                 .align(Alignment.CenterHorizontally)
         )
 

@@ -52,7 +52,7 @@ class AdminPedidoTest {
 
     @Test
     fun rechazarReponeElStock() {
-        // El pedido 3 (RECIBIDA) tiene 1 Aros Copihue (id 2) y 2 Chanchitos (id 11).
+        // El pedido 3 (RECIBIDA) tiene 1 Aros Lapislázuli Gota (id 2) y 2 Chanchitos (id 11).
         val arosAntes = CatalogoRepository.obtenerArtesania(2)!!.stock
         val chanchitosAntes = CatalogoRepository.obtenerArtesania(11)!!.stock
 

@@ -38,6 +38,9 @@ import com.aleyleo.app.view.componentes.EstadoVacio
 import com.aleyleo.app.view.componentes.ImagenArtesania
 import com.aleyleo.app.view.componentes.PantallaBase
 import com.aleyleo.app.viewmodel.CarroViewModel
+import com.aleyleo.app.util.rutaFoto
+import androidx.compose.ui.draw.clip
+import com.aleyleo.app.R
 
 // P07 Carro: productos guardados en Room, cantidades, subtotales y total.
 @Composable
@@ -56,7 +59,7 @@ fun CarroScreen(
         if (items.isEmpty()) {
             EstadoVacio(
                 mensaje = "Tu carro está vacío.\nAgrega artesanías desde el catálogo.",
-                icono = Icons.Filled.RemoveShoppingCart,
+                ilustracion = R.drawable.ilustracion_telar,
                 modifier = Modifier.weight(1f)
             )
         } else {
@@ -132,7 +135,10 @@ private fun FilaCarro(
         ) {
             ImagenArtesania(
                 categoriaId = item.categoriaId,
-                modifier = Modifier.size(72.dp)
+                imagenUrl = rutaFoto(item.artesaniaId),
+                modifier = Modifier
+                    .size(72.dp)
+                    .clip(MaterialTheme.shapes.small)
             )
 
             Column(

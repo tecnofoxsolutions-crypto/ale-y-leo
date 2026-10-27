@@ -16,6 +16,15 @@ import com.aleyleo.app.model.Rol
 import com.aleyleo.app.view.componentes.LogoAleYLeo
 import com.aleyleo.app.viewmodel.AuthViewModel
 import kotlinx.coroutines.delay
+import com.aleyleo.app.R
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.padding
+import com.aleyleo.app.ui.theme.Lino
+import com.aleyleo.app.view.componentes.VersionLogo
 
 // P01 Splash: muestra la marca y decide a dónde ir.
 // Con sesión iniciada entra directo al grafo de su rol; sin sesión va al Login (HU-02).
@@ -37,17 +46,22 @@ fun SplashScreen(
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        LogoAleYLeo(modifier = Modifier.size(120.dp))
-        Text(
-            text = "Ale y Leo",
-            style = MaterialTheme.typography.displaySmall,
-            color = MaterialTheme.colorScheme.primary
+    // La "mesa del taller" de fondo y el logo en lino encima (así lo indica la guía del logo).
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Image(
+            painter = painterResource(R.drawable.mesa_vertical),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
         )
-        Text(text = "Artesanía chilena")
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            LogoAleYLeo(version = VersionLogo.VERTICAL_LINO, modifier = Modifier.width(220.dp))
+            Text(
+                text = "Artesanía chilena",
+                style = MaterialTheme.typography.titleMedium,
+                color = Lino,
+                modifier = Modifier.padding(top = 12.dp)
+            )
+        }
     }
 }

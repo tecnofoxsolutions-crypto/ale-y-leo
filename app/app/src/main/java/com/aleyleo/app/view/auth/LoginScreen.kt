@@ -23,6 +23,13 @@ import com.aleyleo.app.view.componentes.CampoTexto
 import com.aleyleo.app.view.componentes.LogoAleYLeo
 import com.aleyleo.app.view.componentes.PantallaBase
 import com.aleyleo.app.viewmodel.AuthViewModel
+import com.aleyleo.app.R
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.height
+import com.aleyleo.app.view.componentes.VersionLogo
 
 // P02 Login: email y contraseña. Según el rol entra al Catálogo (cliente) o a Pedidos (admin).
 @Composable
@@ -36,9 +43,20 @@ fun LoginScreen(
 
     PantallaBase(titulo = "Iniciar sesión") {
 
-        LogoAleYLeo(
+        // Cabecera: la "mesa del taller" (concepto de Emanuel) y el logo horizontal.
+        Image(
+            painter = painterResource(R.drawable.mesa_horizontal),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(96.dp)
+                .fillMaxWidth()
+                .height(140.dp)
+                .clip(MaterialTheme.shapes.medium)
+        )
+        LogoAleYLeo(
+            version = VersionLogo.HORIZONTAL,
+            modifier = Modifier
+                .fillMaxWidth(0.7f)
                 .align(Alignment.CenterHorizontally)
         )
         Text(
