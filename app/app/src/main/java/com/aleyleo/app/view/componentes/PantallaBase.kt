@@ -3,6 +3,7 @@ package com.aleyleo.app.view.componentes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -37,6 +38,7 @@ fun PantallaBase(
     desplazable: Boolean = true,
     snackbarHostState: SnackbarHostState? = null, // para mostrar mensajes breves abajo
     botonFlotante: @Composable () -> Unit = {},    // por ejemplo, el "Nuevo" de la admin
+    acciones: @Composable RowScope.() -> Unit = {}, // botones a la derecha del título (ej. "Escanear QR")
     contenido: @Composable ColumnScope.() -> Unit
 ) {
     Scaffold(
@@ -58,7 +60,8 @@ fun PantallaBase(
                             )
                         }
                     }
-                }
+                },
+                actions = acciones
             )
         }
     ) { innerPadding ->

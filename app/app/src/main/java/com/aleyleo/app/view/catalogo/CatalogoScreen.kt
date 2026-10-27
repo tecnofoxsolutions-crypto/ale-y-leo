@@ -10,16 +10,22 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -29,13 +35,20 @@ import com.aleyleo.app.view.componentes.PantallaBase
 import com.aleyleo.app.view.componentes.TarjetaArtesania
 import com.aleyleo.app.viewmodel.CatalogoViewModel
 import com.aleyleo.app.viewmodel.FavoritosViewModel
+import com.aleyleo.app.viewmodel.QrViewModel
+import com.aleyleo.app.viewmodel.ResultadoQr
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import kotlinx.coroutines.launch
 
 // P04 Catálogo: buscador, chips de categoría y grilla de artesanías.
 @Composable
 fun CatalogoScreen(
     onVerDetalle: (Int) -> Unit,
     catalogoViewModel: CatalogoViewModel = viewModel(),
-    favoritosViewModel: FavoritosViewModel = viewModel()
+    favoritosViewModel: FavoritosViewModel = viewModel(),
+    qrViewModel: QrViewModel = viewModel()
 ) {
     val uiState by catalogoViewModel.uiState.collectAsStateWithLifecycle()
     val idsFavoritos by favoritosViewModel.idsFavoritos.collectAsStateWithLifecycle()
@@ -47,7 +60,48 @@ fun CatalogoScreen(
         estadoGrilla.scrollToItem(0)
     }
 
-    PantallaBase(titulo = "Catálogo", desplazable = false) {
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    // Lector de QR de Google (visto en clase): abre la cámara y devuelve el texto del código.
+    // No hay que pedir el permiso de cámara: lo maneja Google Play Services.
+    val opcionesQr = remember {
+        GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .build()
+    }
+    val scanner = remember(context, opcionesQr) {
+        GmsBarcodeScanning.getClient(context, opcionesQr)
+    }
+
+    fun escanearQr() {
+        scanner.startScan()
+            .addOnSuccessListener { barcode ->
+                when (val resultado = qrViewModel.guardarQR(barcode.rawValue.orEmpty())) {
+                    is ResultadoQr.AbrirArtesania -> onVerDetalle(resultado.id)
+                    is ResultadoQr.Error -> scope.launch { snackbarHostState.showSnackbar(resultado.mensaje) }
+                }
+            }
+            .addOnCanceledListener {
+                // Escaneo cancelado: se queda en el Catálogo sin hacer nada.
+            }
+            .addOnFailureListener { error ->
+                scope.launch { snackbarHostState.showSnackbar("No se pudo abrir el lector: ${error.message}") }
+            }
+    }
+
+    PantallaBase(
+        titulo = "Catálogo",
+        desplazable = false,
+        snackbarHostState = snackbarHostState,
+        acciones = {
+            TextButton(onClick = { escanearQr() }) {
+                Icon(Icons.Filled.QrCodeScanner, contentDescription = null)
+                Text(" Escanear QR")
+            }
+        }
+    ) {
 
         Buscador(
             texto = busqueda,
