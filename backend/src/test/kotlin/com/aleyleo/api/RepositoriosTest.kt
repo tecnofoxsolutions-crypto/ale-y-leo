@@ -102,7 +102,7 @@ class RepositoriosTest {
         pedidos.save(Pedido(codigo = "ZZ-2", usuario = cliente, estado = EstadoPedido.PAGADA))
 
         // Del más nuevo al más antiguo.
-        assertEquals(listOf("ZZ-2", "ZZ-1"), pedidos.findByUsuarioIdOrderByFechaCreacionDesc(cliente.id!!).map { it.codigo })
+        assertEquals(listOf("ZZ-2", "ZZ-1"), pedidos.findByUsuarioIdOrderByFechaCreacionDescIdDesc(cliente.id!!).map { it.codigo })
 
         val despues = pedidos.contarPorEstado().associate { (it[0] as EstadoPedido) to (it[1] as Long) }
         assertEquals((antes[EstadoPedido.PAGADA] ?: 0) + 1, despues[EstadoPedido.PAGADA])
