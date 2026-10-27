@@ -9,7 +9,8 @@ Equipo: Emanuel Reyes (planificación y diseño) · Jim Charles (desarrollo).
 ```
 ale-y-leo/
 ├── app/       App Android (Kotlin, Jetpack Compose, Material 3, MVVM, Room, Navigation, lector QR)
-└── backend/   API REST (Spring Boot en Kotlin, MySQL, JWT)  — próximamente
+├── backend/   API REST (Spring Boot 3 en Kotlin, MySQL, JWT)
+└── qr/        Códigos QR de prueba para el lector de la app
 ```
 
 ## Cómo correr la app
@@ -17,6 +18,13 @@ ale-y-leo/
 1. Abrir la carpeta `app/` en Android Studio (Open).
 2. Esperar la sincronización de Gradle.
 3. Ejecutar en un emulador o teléfono con Android 8.0 o superior.
+
+## Cómo correr el backend
+
+1. Encender MySQL (en XAMPP: botón *Start* de MySQL). Usuario `root` sin contraseña.
+2. Abrir la carpeta `backend/` en IntelliJ IDEA (u Android Studio) y ejecutar `AleYLeoApplication`,
+   o desde una terminal: `cd backend` y `./gradlew bootRun`.
+3. El schema `aleyleo` y sus tablas se crean solos. La API queda en `http://localhost:8080/api`.
 
 ## Convenciones de Git
 

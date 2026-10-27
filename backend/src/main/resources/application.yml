@@ -1,0 +1,9 @@
+# Configuración común. Los datos de conexión están en application-dev.yml.
+spring:
+  application:
+    name: aleyleo-api
+  profiles:
+    active: dev
+
+server:
+  port: 8080

@@ -1,0 +1,12 @@
+# Perfil de desarrollo (BE-02): MySQL local de XAMPP, usuario root sin contraseña.
+# El schema "aleyleo" se crea solo si no existe.
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/aleyleo?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago
+    username: root
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update   # Hibernate crea y actualiza las tablas a partir de las entidades
+    open-in-view: false
+    show-sql: false
