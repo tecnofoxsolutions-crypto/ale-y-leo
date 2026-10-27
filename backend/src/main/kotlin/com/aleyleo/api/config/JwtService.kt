@@ -19,7 +19,8 @@ class JwtService(
     @Value("\${jwt.secreto}") secreto: String,
     @Value("\${jwt.expiracion-segundos}") val expiracionSegundos: Long
 ) {
-    // HMAC-SHA256 necesita una clave de al menos 32 bytes.
+    // Firma HMAC-SHA: jjwt elige el algoritmo según el largo de la clave (con esta clave, HS512).
+    // La clave debe tener al menos 32 bytes.
     private val clave: SecretKey = Keys.hmacShaKeyFor(secreto.toByteArray())
 
     // Token con el email como "subject" y el id y el rol como datos extra (claims).

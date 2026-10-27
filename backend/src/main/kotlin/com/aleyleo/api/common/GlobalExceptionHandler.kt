@@ -43,6 +43,10 @@ class GlobalExceptionHandler {
     fun noEncontrado(e: NoEncontradoException): ResponseEntity<ApiError> =
         responder(HttpStatus.NOT_FOUND, "NO_ENCONTRADO", e.message ?: "Recurso no encontrado")
 
+    @ExceptionHandler(CredencialesInvalidasException::class)
+    fun credencialesInvalidas(e: CredencialesInvalidasException): ResponseEntity<ApiError> =
+        responder(HttpStatus.UNAUTHORIZED, "CREDENCIALES_INVALIDAS", e.message ?: "Email o contraseña incorrectos")
+
     @ExceptionHandler(AccesoDenegadoException::class)
     fun accesoDenegado(e: AccesoDenegadoException): ResponseEntity<ApiError> =
         responder(HttpStatus.FORBIDDEN, "ACCESO_DENEGADO", e.message ?: "No tienes acceso a este recurso")

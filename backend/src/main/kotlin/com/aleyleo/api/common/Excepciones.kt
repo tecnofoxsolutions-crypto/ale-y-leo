@@ -14,5 +14,8 @@ open class ConflictoException(val codigo: String, mensaje: String) : RuntimeExce
 class StockInsuficienteException(nombreArtesania: String) :
     ConflictoException("STOCK_INSUFICIENTE", "No hay stock suficiente de '$nombreArtesania'")
 
+// 401 en el login: un solo mensaje, sin decir si falló el email o la contraseña (HU-02).
+class CredencialesInvalidasException : RuntimeException("Email o contraseña incorrectos")
+
 // 403: el usuario no puede acceder a este recurso (por ejemplo, el pedido de otro cliente).
 class AccesoDenegadoException(mensaje: String) : RuntimeException(mensaje)
