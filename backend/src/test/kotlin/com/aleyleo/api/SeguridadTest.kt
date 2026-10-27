@@ -73,9 +73,10 @@ class SeguridadTest {
 
     @Test
     fun conTokenAlteradoResponde401() {
-        // Se cambia un carácter de la firma (la última parte del token).
-        val ultimo = tokenCliente.last()
-        val alterado = tokenCliente.dropLast(1) + (if (ultimo == 'A') 'B' else 'A')
+        // Se cambia un carácter en medio de la firma (la última parte del token).
+        // No se usa el último carácter: sus bits finales son relleno de base64 y cambiarlo puede no alterar nada.
+        val i = tokenCliente.lastIndexOf('.') + 10
+        val alterado = tokenCliente.substring(0, i) + (if (tokenCliente[i] == 'A') 'B' else 'A') + tokenCliente.substring(i + 1)
 
         mvc.get("/api/usuarios/prueba-me") {
             header("Authorization", "Bearer $alterado")

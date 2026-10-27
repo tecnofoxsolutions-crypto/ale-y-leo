@@ -8,6 +8,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
+import org.springframework.web.multipart.MaxUploadSizeExceededException
+import org.springframework.web.multipart.support.MissingServletRequestPartException
 import org.springframework.web.servlet.resource.NoResourceFoundException
 
 // Atrapa las excepciones de todos los controllers y responde siempre con un ApiError (sección 6.2).
@@ -38,6 +40,19 @@ class GlobalExceptionHandler {
     @ExceptionHandler(NoResourceFoundException::class)
     fun rutaInexistente(e: NoResourceFoundException): ResponseEntity<ApiError> =
         responder(HttpStatus.NOT_FOUND, "NO_ENCONTRADO", "La ruta no existe")
+
+    // 400: problemas con la imagen subida (BE-12).
+    @ExceptionHandler(ArchivoInvalidoException::class)
+    fun archivoInvalido(e: ArchivoInvalidoException): ResponseEntity<ApiError> =
+        responder(HttpStatus.BAD_REQUEST, "ARCHIVO_INVALIDO", e.message ?: "Archivo inválido")
+
+    @ExceptionHandler(MaxUploadSizeExceededException::class)
+    fun archivoMuyGrande(e: MaxUploadSizeExceededException): ResponseEntity<ApiError> =
+        responder(HttpStatus.BAD_REQUEST, "ARCHIVO_INVALIDO", "La imagen pesa más de 5 MB")
+
+    @ExceptionHandler(MissingServletRequestPartException::class)
+    fun faltaArchivo(e: MissingServletRequestPartException): ResponseEntity<ApiError> =
+        responder(HttpStatus.BAD_REQUEST, "ARCHIVO_INVALIDO", "Falta el archivo (campo '${e.requestPartName}')")
 
     @ExceptionHandler(NoEncontradoException::class)
     fun noEncontrado(e: NoEncontradoException): ResponseEntity<ApiError> =

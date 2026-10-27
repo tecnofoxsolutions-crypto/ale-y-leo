@@ -38,3 +38,6 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### Imágenes subidas en desarrollo (BE-12) ###
+uploads/

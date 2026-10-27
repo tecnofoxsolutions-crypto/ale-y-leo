@@ -25,6 +25,10 @@ ale-y-leo/
 2. Abrir la carpeta `backend/` en IntelliJ IDEA (u Android Studio) y ejecutar `AleYLeoApplication`,
    o desde una terminal: `cd backend` y `./gradlew bootRun`.
 3. El schema `aleyleo` y sus tablas se crean solos. La API queda en `http://localhost:8080/api`.
+4. Con la base vacía se cargan los datos de prueba (4 categorías, 20 artesanías, 4 usuarios y 7 pedidos):
+   - Admin: `admin@aleyleo.cl` / `Admin123`
+   - Clientes: `sofia@correo.cl`, `matias@correo.cl`, `camila@correo.cl` / `Cliente123`
+   Las fotos de las artesanías van en `backend/src/main/resources/semilla/imagenes/` (`art-1.jpg` a `art-20.jpg`).
 
 ## Convenciones de Git
 

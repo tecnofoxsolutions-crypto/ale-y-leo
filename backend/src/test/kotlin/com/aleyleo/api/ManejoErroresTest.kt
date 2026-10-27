@@ -1,5 +1,6 @@
 package com.aleyleo.api
 
+import com.aleyleo.api.archivo.FileStorageService
 import com.aleyleo.api.common.ConflictoException
 import com.aleyleo.api.common.NoEncontradoException
 import com.aleyleo.api.common.StockInsuficienteException
@@ -27,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController
 // Usa un controller solo de prueba; los filtros de seguridad se desactivan (los prueba SeguridadTest).
 @WebMvcTest(controllers = [ManejoErroresTest.ControladorPrueba::class])
 @AutoConfigureMockMvc(addFilters = false)
-@Import(ManejoErroresTest.ControladorPrueba::class, JwtService::class)
+@Import(ManejoErroresTest.ControladorPrueba::class, JwtService::class, FileStorageService::class)
 class ManejoErroresTest {
 
     data class DtoPrueba(

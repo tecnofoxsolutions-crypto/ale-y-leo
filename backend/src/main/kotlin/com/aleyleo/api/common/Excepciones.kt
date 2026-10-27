@@ -14,6 +14,9 @@ open class ConflictoException(val codigo: String, mensaje: String) : RuntimeExce
 class StockInsuficienteException(nombreArtesania: String) :
     ConflictoException("STOCK_INSUFICIENTE", "No hay stock suficiente de '$nombreArtesania'")
 
+// 400: la imagen subida no es JPG o PNG, está vacía o pesa más de 5 MB (BE-12).
+class ArchivoInvalidoException(mensaje: String) : RuntimeException(mensaje)
+
 // 401 en el login: un solo mensaje, sin decir si falló el email o la contraseña (HU-02).
 class CredencialesInvalidasException : RuntimeException("Email o contraseña incorrectos")
 

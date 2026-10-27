@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 
 // Endpoints 7 y 8 (públicos): el catálogo del cliente.
 // Ejemplo: GET /api/artesanias?categoriaId=2&q=paila
@@ -50,4 +52,9 @@ class AdminArtesaniaController(private val artesaniaService: ArtesaniaService) {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun desactivar(@PathVariable id: Long) = artesaniaService.desactivar(id)
+
+    // Endpoint 22: multipart/form-data con el campo "archivo" (JPG o PNG, máximo 5 MB).
+    @PostMapping("/{id}/imagen")
+    fun subirImagen(@PathVariable id: Long, @RequestPart("archivo") archivo: MultipartFile): ArtesaniaResponse =
+        artesaniaService.subirImagen(id, archivo)
 }

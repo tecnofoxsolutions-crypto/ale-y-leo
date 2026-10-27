@@ -3,17 +3,20 @@ package com.aleyleo.api.artesania
 import com.aleyleo.api.artesania.dto.ArtesaniaRequest
 import com.aleyleo.api.artesania.dto.ArtesaniaResponse
 import com.aleyleo.api.artesania.dto.aResponse
+import com.aleyleo.api.archivo.FileStorageService
 import com.aleyleo.api.categoria.Categoria
 import com.aleyleo.api.categoria.CategoriaRepository
 import com.aleyleo.api.common.NoEncontradoException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 
 // Reglas del catálogo (HU-04, HU-05, HU-06) y de su administración (HU-16).
 @Service
 class ArtesaniaService(
     private val artesaniaRepository: ArtesaniaRepository,
-    private val categoriaRepository: CategoriaRepository
+    private val categoriaRepository: CategoriaRepository,
+    private val fileStorageService: FileStorageService
 ) {
 
     // Endpoint 7 (público): solo activas de categorías activas; filtros opcionales.
@@ -55,6 +58,14 @@ class ArtesaniaService(
     @Transactional
     fun desactivar(id: Long) {
         buscar(id).activo = false
+    }
+
+    // Endpoint 22 (BE-12): sube o reemplaza la imagen. Queda como /uploads/art-<id>.jpg (o .png).
+    @Transactional
+    fun subirImagen(id: Long, archivo: MultipartFile): ArtesaniaResponse {
+        val artesania = buscar(id)
+        artesania.imagenUrl = fileStorageService.guardarImagen(archivo, "art-$id")
+        return artesania.aResponse()
     }
 
     private fun copiarDatos(datos: ArtesaniaRequest, artesania: Artesania) {
