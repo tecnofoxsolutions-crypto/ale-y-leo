@@ -27,9 +27,13 @@ import com.aleyleo.app.ui.theme.AleYLeoTheme
 import com.aleyleo.app.util.cargarMiniatura
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import androidx.compose.ui.res.painterResource
+import com.aleyleo.app.util.fotoLocal
 
-// Imagen de la artesanía. Si la admin eligió una foto de la galería (content://...), la muestra.
-// Si no, mientras no lleguen las fotos (tarjeta DI-10), un fondo de color con el ícono de su categoría.
+// Imagen de la artesanía, en este orden:
+// 1) la foto que la admin eligió de la galería (content://...),
+// 2) la foto de prueba guardada en la app (fotoLocal, DI-10),
+// 3) si no hay foto, un fondo de color con el ícono de su categoría.
 @Composable
 fun ImagenArtesania(
     categoriaId: Int,
@@ -49,6 +53,17 @@ fun ImagenArtesania(
     foto?.let {
         Image(
             bitmap = it,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = modifier
+        )
+        return
+    }
+
+    // Foto de Emanuel guardada en la app (las 20 artesanías de prueba).
+    fotoLocal(imagenUrl)?.let {
+        Image(
+            painter = painterResource(it),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = modifier

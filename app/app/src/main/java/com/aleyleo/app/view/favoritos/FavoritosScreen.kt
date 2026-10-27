@@ -15,6 +15,7 @@ import com.aleyleo.app.view.componentes.EstadoVacio
 import com.aleyleo.app.view.componentes.PantallaBase
 import com.aleyleo.app.view.componentes.TarjetaArtesania
 import com.aleyleo.app.viewmodel.FavoritosViewModel
+import com.aleyleo.app.R
 
 // P06 Favoritos: las artesanías marcadas con el corazón (guardadas en Room).
 @Composable
@@ -28,7 +29,7 @@ fun FavoritosScreen(
         if (favoritas.isEmpty()) {
             EstadoVacio(
                 mensaje = "Aún no tienes favoritos.\nToca el corazón de una artesanía para guardarla aquí.",
-                icono = Icons.Filled.FavoriteBorder
+                ilustracion = R.drawable.ilustracion_canasto
             )
         } else {
             LazyVerticalGrid(

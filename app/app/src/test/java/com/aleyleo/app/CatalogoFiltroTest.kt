@@ -36,8 +36,8 @@ class CatalogoFiltroTest {
     fun busquedaNoDistingueMayusculasYMiraNombreDescripcionYMateriales() {
         // "PLATA" está en los materiales de varias piezas de orfebrería
         assertTrue(filtrarCatalogo(artesanias, categorias, null, "PLATA").isNotEmpty())
-        // "chiloé" está en la descripción de la Manta Chilota
-        assertEquals("Manta Chilota", filtrarCatalogo(artesanias, categorias, null, "chiloé").single().nombre)
+        // "chiloé" está en la descripción del Camino de Mesa en Telar
+        assertEquals("Camino de Mesa en Telar", filtrarCatalogo(artesanias, categorias, null, "chiloé").single().nombre)
         // "paila" está en el nombre
         assertEquals(6, filtrarCatalogo(artesanias, categorias, null, "paila").single().id)
     }

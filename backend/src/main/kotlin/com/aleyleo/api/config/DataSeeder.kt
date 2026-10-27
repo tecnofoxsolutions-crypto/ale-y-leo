@@ -68,25 +68,25 @@ class DataSeeder(
         val datos = listOf(
             // categoría, nombre, descripción, materiales, precio, stock
             Fila(orfebreria, "Colgante Lapislázuli Cordillera", "Colgante de plata con piedra lapislázuli tallada a mano.", "Lapislázuli, plata 950", 28500, 1),
-            Fila(orfebreria, "Aros Copihue", "Aros con forma de copihue, la flor nacional de Chile.", "Plata 950, esmalte", 19900, 4),
-            Fila(orfebreria, "Anillo Luna Mapuche", "Anillo inspirado en la orfebrería mapuche.", "Plata 950, cincelado", 24000, 0),
-            Fila(orfebreria, "Pulsera Trenzada Andina", "Pulsera de hilos de plata trenzados a mano.", "Plata 950, trenzado", 32000, 3),
+            Fila(orfebreria, "Aros Lapislázuli Gota", "Aros de plata martillada con lapislázuli en forma de gota.", "Plata 950, lapislázuli", 19900, 4),
+            Fila(orfebreria, "Anillo Luna Mapuche", "Anillo ancho de plata martillada con una turquesa ovalada.", "Plata 950, turquesa", 24000, 0),
+            Fila(orfebreria, "Collar de Cuarzo", "Collar de cuarzo transparente y ahumado con cierre de plata.", "Cuarzo, plata 950", 32000, 3),
             Fila(orfebreria, "Prendedor Trapelacucha", "Réplica de un prendedor tradicional mapuche.", "Alpaca, repujado", 45000, 2),
             Fila(cobre, "Paila de Cobre", "Paila tradicional para huevos o pebre.", "Cobre martillado", 14000, 5),
             Fila(cobre, "Jarro Martillado", "Jarro para agua, martillado a mano.", "Cobre, estaño", 36000, 2),
             Fila(cobre, "Bandeja Desierto", "Bandeja grabada con motivos del desierto de Atacama.", "Cobre grabado", 27500, 0),
-            Fila(cobre, "Campana de Viento", "Móvil de campanas de cobre para jardín o terraza.", "Cobre, cordel encerado", 12500, 4),
-            Fila(cobre, "Set de Posavasos", "Cuatro posavasos de cobre con base de corcho.", "Cobre, corcho", 9900, 5),
+            Fila(cobre, "Candelero de Cobre", "Candelero martillado a mano, con asa para llevarlo.", "Cobre martillado", 12500, 4),
+            Fila(cobre, "Cuenco con Pátina", "Cuenco de cobre con pátina verde por fuera y brillo por dentro.", "Cobre, pátina natural", 9900, 5),
             Fila(alfareria, "Chanchito de la Suerte", "Chanchito de tres patas de Quinchamalí.", "Greda negra, incisión con caolín", 8500, 5),
-            Fila(alfareria, "Olla de Greda", "Olla de Pomaire para cazuela o porotos.", "Greda de Pomaire", 15900, 3),
+            Fila(alfareria, "Fuente de Greda", "Fuente de Pomaire con asas, para el horno o la mesa.", "Greda de Pomaire", 15900, 3),
             Fila(alfareria, "Guitarrera de Quinchamalí", "Figura de mujer con guitarra, pieza típica de Ñuble.", "Greda negra pulida", 22000, 1),
-            Fila(alfareria, "Set de Pocillos", "Seis pocillos para pebre o aceitunas.", "Greda esmaltada", 13500, 4),
-            Fila(alfareria, "Jarrón Talagante", "Jarrón pintado con escenas costumbristas.", "Loza policromada", 29000, 0),
-            Fila(textil, "Manta Chilota", "Manta tejida a telar con lana de oveja de Chiloé.", "Lana natural, telar", 48000, 2),
+            Fila(alfareria, "Jarro de Greda", "Jarro de greda roja para agua o chicha.", "Greda de Pomaire", 13500, 4),
+            Fila(alfareria, "Figura de Talagante", "Figura de loza pintada a mano: mujer con canasto de flores.", "Loza policromada", 29000, 0),
+            Fila(textil, "Camino de Mesa en Telar", "Camino de mesa tejido a telar con lana de oveja de Chiloé.", "Lana de oveja teñida, telar", 48000, 2),
             Fila(textil, "Chal de Alpaca", "Chal liviano en tonos tierra.", "Lana de alpaca, palillo", 39500, 3),
-            Fila(textil, "Cojín Mapuche", "Funda de cojín con diseños geométricos mapuche.", "Lana, telar mapuche", 18900, 5),
-            Fila(textil, "Gorro Chilote", "Gorro de lana natural tejido a palillo.", "Lana natural, palillo", 11900, 4),
-            Fila(textil, "Tapiz Andino", "Tapiz mural con motivos andinos.", "Lana teñida con tintes naturales", 54000, 1)
+            Fila(textil, "Pie de Cama a Telar", "Pie de cama de lana con franjas, tejido a telar.", "Lana natural, telar", 18900, 5),
+            Fila(textil, "Trarihue", "Faja mapuche tejida a telar con diseños geométricos.", "Lana, telar mapuche", 11900, 4),
+            Fila(textil, "Alfombra Anudada", "Alfombra pequeña de lana anudada a mano con un rombo al centro.", "Lana teñida con tintes naturales", 54000, 1)
         )
         val artesanias = artesaniaRepository.saveAll(
             datos.map {

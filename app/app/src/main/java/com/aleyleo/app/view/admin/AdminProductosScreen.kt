@@ -36,6 +36,7 @@ import com.aleyleo.app.view.componentes.EstadoVacio
 import com.aleyleo.app.view.componentes.ImagenArtesania
 import com.aleyleo.app.view.componentes.PantallaBase
 import com.aleyleo.app.viewmodel.AdminProductosViewModel
+import com.aleyleo.app.R
 
 // P17 Admin: todas las artesanías (también las inactivas) con precio y stock (HU-16).
 @Composable
@@ -75,7 +76,7 @@ fun AdminProductosScreen(
         )
 
         if (productos.isEmpty()) {
-            EstadoVacio(mensaje = "No hay artesanías que coincidan")
+            EstadoVacio(mensaje = "No hay artesanías que coincidan", ilustracion = R.drawable.ilustracion_lupa)
         } else {
             // Espacio abajo para que el botón "Nuevo" no tape la última fila.
             LazyColumn(

@@ -29,6 +29,7 @@ import com.aleyleo.app.view.componentes.PantallaBase
 import com.aleyleo.app.view.componentes.TarjetaArtesania
 import com.aleyleo.app.viewmodel.CatalogoViewModel
 import com.aleyleo.app.viewmodel.FavoritosViewModel
+import com.aleyleo.app.R
 
 // P04 Catálogo: buscador, chips de categoría y grilla de artesanías.
 @Composable
@@ -61,7 +62,7 @@ fun CatalogoScreen(
         )
 
         if (uiState.artesanias.isEmpty()) {
-            EstadoVacio(mensaje = "No encontramos artesanías con ese filtro")
+            EstadoVacio(mensaje = "No encontramos artesanías con ese filtro", ilustracion = R.drawable.ilustracion_lupa)
         } else {
             // Grilla de 2 columnas que solo dibuja las tarjetas visibles (lazy).
             LazyVerticalGrid(

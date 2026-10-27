@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.AleYLeo" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.AleYLeo" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Lino, el fondo de la paleta de Emanuel: evita un destello blanco al abrir la app. -->
+        <item name="android:windowBackground">#F7F2EB</item>
+    </style>
 </resources>

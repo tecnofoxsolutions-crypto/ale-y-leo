@@ -21,6 +21,7 @@ import com.aleyleo.app.view.componentes.EstadoVacio
 import com.aleyleo.app.view.componentes.PantallaBase
 import com.aleyleo.app.view.pedidos.FilaPedido
 import com.aleyleo.app.viewmodel.AdminPedidosViewModel
+import com.aleyleo.app.R
 
 // P15 Admin: todos los pedidos, con contadores por estado y chips para filtrar (HU-14).
 @Composable
@@ -64,7 +65,7 @@ fun AdminPedidosScreen(
         if (uiState.pedidos.isEmpty()) {
             EstadoVacio(
                 mensaje = "No hay pedidos en este estado",
-                icono = Icons.AutoMirrored.Filled.ReceiptLong
+                ilustracion = R.drawable.ilustracion_carrete
             )
         } else {
             LazyColumn(state = estadoLista, verticalArrangement = Arrangement.spacedBy(12.dp)) {

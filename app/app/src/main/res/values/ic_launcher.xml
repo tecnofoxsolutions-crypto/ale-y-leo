@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Cobre de la paleta de Emanuel: fondo del ícono de la app. -->
+    <color name="ic_launcher_fondo">#A84E24</color>
+</resources>

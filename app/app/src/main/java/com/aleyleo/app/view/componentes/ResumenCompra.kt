@@ -62,7 +62,7 @@ fun ResumenCompraPreview() {
         ResumenCompra(
             lineas = listOf(
                 LineaResumen("Colgante Lapislázuli Cordillera", 1, 28500),
-                LineaResumen("Set de Pocillos", 2, 27000)
+                LineaResumen("Jarro de Greda", 2, 27000)
             ),
             total = 55500
         )

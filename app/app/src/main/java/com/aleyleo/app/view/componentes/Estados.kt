@@ -21,14 +21,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.aleyleo.app.ui.theme.AleYLeoTheme
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.aleyleo.app.ui.theme.Dimens
 
 // Los tres estados visuales de una pantalla con datos: vacío, cargando y error.
 
+// "ilustracion" es un dibujo de Emanuel (canasto, telar, carrete o lupa); si es null se usa el ícono.
 @Composable
 fun EstadoVacio(
     mensaje: String,
     modifier: Modifier = Modifier,
-    icono: ImageVector = Icons.Filled.SearchOff
+    icono: ImageVector = Icons.Filled.SearchOff,
+    @DrawableRes ilustracion: Int? = null
 ) {
     Column(
         modifier = modifier
@@ -37,12 +43,20 @@ fun EstadoVacio(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Icon(
-            imageVector = icono,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(56.dp)
-        )
+        if (ilustracion != null) {
+            Image(
+                painter = painterResource(ilustracion),
+                contentDescription = null,
+                modifier = Modifier.size(Dimens.IlustracionVacio)
+            )
+        } else {
+            Icon(
+                imageVector = icono,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(56.dp)
+            )
+        }
         Text(
             text = mensaje,
             textAlign = TextAlign.Center,

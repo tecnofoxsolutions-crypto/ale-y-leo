@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12 o superior muestra su propia pantalla de inicio con el ícono: fondo en lino. -->
+    <style name="Theme.AleYLeo" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">#F7F2EB</item>
+        <item name="android:windowSplashScreenBackground">#F7F2EB</item>
+    </style>
+</resources>

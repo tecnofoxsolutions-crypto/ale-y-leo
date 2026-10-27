@@ -64,12 +64,12 @@ class PedidoTest {
         val otro = (crear(ItemSolicitud(1, 1)) as ResultadoPedido.Exito).pedido
         PedidoRepository.pagar(otro.id)
 
-        // ...y el pedido 7 (Generada, con 1 Colgante y 2 Pocillos) ya no se puede pagar.
+        // ...y el pedido 7 (Generada, con 1 Colgante y 2 Jarros de Greda) ya no se puede pagar.
         val resultado = PedidoRepository.pagar(7)
 
         assertTrue(resultado is ResultadoPedido.Error)
         assertEquals(EstadoPedido.GENERADA, PedidoRepository.obtenerPedido(7)!!.estado)
-        assertEquals(4, CatalogoRepository.obtenerArtesania(14)!!.stock) // Pocillos sin descontar
+        assertEquals(4, CatalogoRepository.obtenerArtesania(14)!!.stock) // Jarro de Greda sin descontar
     }
 
     @Test
