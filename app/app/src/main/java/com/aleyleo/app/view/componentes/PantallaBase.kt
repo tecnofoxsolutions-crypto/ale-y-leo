@@ -36,9 +36,11 @@ fun PantallaBase(
     onVolver: (() -> Unit)? = null,
     desplazable: Boolean = true,
     snackbarHostState: SnackbarHostState? = null, // para mostrar mensajes breves abajo
+    botonFlotante: @Composable () -> Unit = {},    // por ejemplo, el "Nuevo" de la admin
     contenido: @Composable ColumnScope.() -> Unit
 ) {
     Scaffold(
+        floatingActionButton = botonFlotante,
         snackbarHost = {
             if (snackbarHostState != null) {
                 SnackbarHost(snackbarHostState)

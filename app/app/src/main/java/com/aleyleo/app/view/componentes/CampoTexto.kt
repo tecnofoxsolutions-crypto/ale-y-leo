@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.aleyleo.app.ui.theme.AleYLeoTheme
 
-// Campo de texto con su mensaje de error debajo. Lo usan Login, Registro y Editar perfil.
+// Campo de texto con su mensaje de error debajo. Lo usan Login, Registro, Editar perfil y los formularios de la admin.
 // esPassword = true oculta el texto y agrega el botón del ojo para mostrarlo.
 @Composable
 fun CampoTexto(
@@ -33,7 +33,8 @@ fun CampoTexto(
     etiqueta: String,
     error: String?,
     tipoTeclado: KeyboardType = KeyboardType.Text,
-    esPassword: Boolean = false
+    esPassword: Boolean = false,
+    lineas: Int = 1 // más de 1 para textos largos, como la descripción
 ) {
     // Estado local de la pantalla: si la contraseña se ve o no.
     var mostrar by remember { mutableStateOf(false) }
@@ -44,7 +45,8 @@ fun CampoTexto(
         label = { Text(etiqueta) },
         isError = error != null,
         supportingText = { error?.let { Text(it) } },
-        singleLine = true,
+        singleLine = lineas == 1,
+        minLines = lineas,
         keyboardOptions = KeyboardOptions(keyboardType = if (esPassword) KeyboardType.Password else tipoTeclado),
         visualTransformation = if (esPassword && !mostrar) PasswordVisualTransformation() else VisualTransformation.None,
         trailingIcon = {

@@ -69,3 +69,31 @@ fun calcularDigitoVerificador(cuerpo: String): Char {
         else -> resultado.digitToChar()
     }
 }
+
+// ---------- Formulario de producto (HU-16) ----------
+
+// "mensaje" es el texto completo del error, por ejemplo "La descripción es obligatoria".
+fun validarObligatorio(texto: String, mensaje: String): String? {
+    return if (texto.isBlank()) mensaje else null
+}
+
+// El precio va en pesos enteros y debe ser mayor que 0.
+fun validarPrecio(texto: String): String? {
+    val precio = texto.trim().toIntOrNull() ?: return "Ingresa un precio en pesos, sin puntos"
+    return if (precio <= 0) "El precio debe ser mayor que 0" else null
+}
+
+// El stock puede ser 0 (agotado), pero no negativo.
+fun validarStock(texto: String): String? {
+    val stock = texto.trim().toIntOrNull() ?: return "Ingresa un número entero"
+    return if (stock < 0) "El stock no puede ser negativo" else null
+}
+
+const val MAX_BYTES_IMAGEN = 5 * 1024 * 1024 // 5 MB
+
+// Imagen elegida de la galería: solo JPG o PNG de hasta 5 MB.
+fun validarImagen(tipo: String?, bytes: Long): String? {
+    if (tipo != "image/jpeg" && tipo != "image/png") return "La imagen debe ser JPG o PNG"
+    if (bytes > MAX_BYTES_IMAGEN) return "La imagen pesa más de 5 MB"
+    return null
+}

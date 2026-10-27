@@ -40,6 +40,7 @@ fun TarjetaArtesania(
         Box {
             ImagenArtesania(
                 categoriaId = artesania.categoriaId,
+                imagenUrl = artesania.imagenUrl,
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)

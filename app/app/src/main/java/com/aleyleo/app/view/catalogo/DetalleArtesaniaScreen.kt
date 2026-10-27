@@ -72,6 +72,7 @@ fun DetalleArtesaniaScreen(
 
         ImagenArtesania(
             categoriaId = artesania.categoriaId,
+            imagenUrl = artesania.imagenUrl,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(260.dp)
