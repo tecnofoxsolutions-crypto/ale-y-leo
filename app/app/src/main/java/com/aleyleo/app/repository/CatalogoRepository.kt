@@ -34,6 +34,13 @@ object CatalogoRepository {
         }
     }
 
+    // Lo usa la admin al rechazar un pedido ya pagado: devuelve las unidades al stock.
+    fun reponerStock(artesaniaId: Int, cantidad: Int) {
+        _artesanias.update { lista ->
+            lista.map { if (it.id == artesaniaId) it.copy(stock = it.stock + cantidad) else it }
+        }
+    }
+
     // Vuelve a los datos iniciales (lo usan las pruebas unitarias).
     fun reiniciar() {
         _categorias.value = DatosPrueba.categorias

@@ -110,6 +110,23 @@ object PedidoRepository {
         return cambiarEstado(pedido, EstadoPedido.CANCELADA)
     }
 
+    // PATCH /api/admin/pedidos/{id}/estado (HU-15): solo transiciones válidas de la tabla 5.3.
+    // Cualquier otra responde error (en el backend, 409 Conflict).
+    fun cambiarEstadoAdmin(pedidoId: Int, nuevo: EstadoPedido): ResultadoPedido {
+        val pedido = obtenerPedido(pedidoId) ?: return ResultadoPedido.Error("Pedido no encontrado")
+
+        if (nuevo !in pedido.estado.siguientesParaAdmin()) {
+            return ResultadoPedido.Error(
+                "No se puede pasar de ${pedido.estado.etiqueta} a ${nuevo.etiqueta}"
+            )
+        }
+        // Rechazar un pedido pagado devuelve las unidades al catálogo.
+        if (nuevo == EstadoPedido.RECHAZADA) {
+            pedido.detalles.forEach { CatalogoRepository.reponerStock(it.artesaniaId, it.cantidad) }
+        }
+        return cambiarEstado(pedido, nuevo)
+    }
+
     private fun cambiarEstado(pedido: Pedido, nuevo: EstadoPedido): ResultadoPedido {
         val actualizado = pedido.copy(estado = nuevo)
         _pedidos.update { lista -> lista.map { if (it.id == pedido.id) actualizado else it } }

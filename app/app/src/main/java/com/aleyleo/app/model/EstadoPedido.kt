@@ -9,5 +9,14 @@ enum class EstadoPedido(val etiqueta: String) {
     EN_PREPARACION("En preparación"),
     FINALIZADA("Finalizada"),
     CANCELADA("Cancelada"),
-    RECHAZADA("Rechazada")
+    RECHAZADA("Rechazada");
+
+    // Estados a los que la ADMIN puede mover un pedido desde este estado (tabla 5.3).
+    // Las demás transiciones (pagar y cancelar) son del cliente y no aparecen aquí.
+    fun siguientesParaAdmin(): List<EstadoPedido> = when (this) {
+        PAGADA -> listOf(RECIBIDA, RECHAZADA)
+        RECIBIDA -> listOf(EN_PREPARACION, RECHAZADA)
+        EN_PREPARACION -> listOf(FINALIZADA)
+        else -> emptyList() // GENERADA es del cliente; FINALIZADA, CANCELADA y RECHAZADA son finales
+    }
 }

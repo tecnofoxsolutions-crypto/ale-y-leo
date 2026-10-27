@@ -75,6 +75,11 @@ object AuthRepository {
         return actualizado
     }
 
+    // Datos del cliente de un pedido (los ve la admin en el detalle, HU-14).
+    fun obtenerUsuario(id: Int): Usuario? {
+        return usuarios.find { it.id == id }
+    }
+
     fun cerrarSesion() {
         _sesion.value = null
     }
