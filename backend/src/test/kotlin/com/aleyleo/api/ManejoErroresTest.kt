@@ -3,6 +3,7 @@ package com.aleyleo.api
 import com.aleyleo.api.common.ConflictoException
 import com.aleyleo.api.common.NoEncontradoException
 import com.aleyleo.api.common.StockInsuficienteException
+import com.aleyleo.api.config.JwtService
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -23,10 +24,10 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 // BE-06: cada error responde con el formato ApiError y el código HTTP de la sección 6.2.
-// Usa un controller solo de prueba; los filtros de seguridad se desactivan (los ve BE-07).
+// Usa un controller solo de prueba; los filtros de seguridad se desactivan (los prueba SeguridadTest).
 @WebMvcTest(controllers = [ManejoErroresTest.ControladorPrueba::class])
 @AutoConfigureMockMvc(addFilters = false)
-@Import(ManejoErroresTest.ControladorPrueba::class)
+@Import(ManejoErroresTest.ControladorPrueba::class, JwtService::class)
 class ManejoErroresTest {
 
     data class DtoPrueba(

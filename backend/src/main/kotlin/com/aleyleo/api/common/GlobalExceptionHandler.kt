@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
+import org.springframework.web.servlet.resource.NoResourceFoundException
 
 // Atrapa las excepciones de todos los controllers y responde siempre con un ApiError (sección 6.2).
 @RestControllerAdvice
@@ -32,6 +33,11 @@ class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException::class)
     fun parametroInvalido(e: MethodArgumentTypeMismatchException): ResponseEntity<ApiError> =
         responder(HttpStatus.BAD_REQUEST, "PARAMETRO_INVALIDO", "El parámetro '${e.name}' no es válido")
+
+    // 404: la ruta no existe (por ejemplo, una URL mal escrita).
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun rutaInexistente(e: NoResourceFoundException): ResponseEntity<ApiError> =
+        responder(HttpStatus.NOT_FOUND, "NO_ENCONTRADO", "La ruta no existe")
 
     @ExceptionHandler(NoEncontradoException::class)
     fun noEncontrado(e: NoEncontradoException): ResponseEntity<ApiError> =

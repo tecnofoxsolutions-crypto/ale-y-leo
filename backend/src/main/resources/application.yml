@@ -7,3 +7,8 @@ spring:
 
 server:
   port: 8080
+
+# JWT (BE-08). La clave es SOLO de desarrollo: en producción iría en una variable de entorno.
+jwt:
+  secreto: "aleyleo-clave-de-desarrollo-solo-para-la-E2-no-usar-en-produccion"
+  expiracion-segundos: 86400   # 24 horas
