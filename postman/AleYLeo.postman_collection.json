@@ -1,0 +1,1348 @@
+{
+  "info": {
+    "name": "Ale y Leo API",
+    "description": "Los 27 endpoints de la API de Ale y Leo (sección 6.1), en el orden en que se prueban.\n\nUso: importar esta colección y el entorno 'Ale y Leo - local', elegir el entorno y ejecutar con Collection Runner. Los logins guardan el token en el entorno, así que no hay que copiarlo a mano.\nRequisitos: backend corriendo en localhost:8080 con los datos de prueba (admin@aleyleo.cl / Admin123).\nEl número entre corchetes es el endpoint de la tabla 6.1.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Autenticación (endpoints 1 y 2)",
+      "description": "Registro e inicio de sesión. El token queda guardado solo en el entorno.",
+      "item": [
+        {
+          "name": "Registro de un cliente nuevo [1]",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/registro",
+            "description": "HU-01. Crea un CLIENTE y devuelve su token (queda con sesión iniciada).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rut\": \"{{rutNuevo}}\",\n  \"nombreCompleto\": \"Cliente Postman\",\n  \"email\": \"{{emailNuevo}}\",\n  \"telefono\": \"+56 9 8765 4321\",\n  \"direccion\": \"Av. Siempre Viva 123\",\n  \"comuna\": \"Providencia\",\n  \"password\": \"Secreta123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// RUT válido aleatorio (módulo 11) y email único, para poder correr la colección muchas veces.",
+                  "const cuerpo = String(Math.floor(30000000 + Math.random() * 20000000));",
+                  "let suma = 0, factor = 2;",
+                  "for (const d of cuerpo.split('').reverse()) { suma += Number(d) * factor; factor = factor === 7 ? 2 : factor + 1; }",
+                  "const resto = 11 - (suma % 11);",
+                  "const dv = resto === 11 ? '0' : resto === 10 ? 'K' : String(resto);",
+                  "pm.environment.set('rutNuevo', cuerpo + '-' + dv);",
+                  "pm.environment.set('emailNuevo', 'postman' + Date.now() + '@correo.cl');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.environment.set(\"tokenCliente\", r.token);",
+                  "pm.test(\"Queda como CLIENTE\", () => pm.expect(r.usuario.rol).to.eql(\"CLIENTE\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registro con email repetido → 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/registro",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rut\": \"{{rutNuevo}}\",\n  \"nombreCompleto\": \"Cliente Postman\",\n  \"email\": \"{{emailNuevo}}\",\n  \"telefono\": \"+56 9 8765 4321\",\n  \"direccion\": \"Av. Siempre Viva 123\",\n  \"comuna\": \"Providencia\",\n  \"password\": \"Secreta123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 409\", () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registro con datos inválidos → 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/registro",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rut\": \"18.432.567-4\",\n  \"nombreCompleto\": \"\",\n  \"email\": \"sofia@\",\n  \"telefono\": \"123\",\n  \"direccion\": \"\",\n  \"comuna\": \"\",\n  \"password\": \"123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Indica los campos\", () => pm.expect(pm.response.json().campos).to.have.property(\"rut\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login con contraseña incorrecta → 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@aleyleo.cl\",\n  \"password\": \"mala12345\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login admin [2]",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/login",
+            "description": "HU-02. Guarda el token en {{tokenAdmin}} para las rutas /api/admin/**.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@aleyleo.cl\",\n  \"password\": \"Admin123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "pm.environment.set(\"tokenAdmin\", r.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login cliente [2]",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailNuevo}}\",\n  \"password\": \"Secreta123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "pm.environment.set(\"tokenCliente\", r.token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Perfil (endpoints 3 a 5)",
+      "description": "",
+      "item": [
+        {
+          "name": "Ver mi perfil [3]",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenCliente}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/usuarios/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar mi perfil [4]",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenCliente}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/usuarios/me",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreCompleto\": \"Cliente Postman Editado\",\n  \"telefono\": \"912345678\",\n  \"direccion\": \"Calle Nueva 45\",\n  \"comuna\": \"Ñuñoa\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Subir foto de perfil [5]",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenCliente}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/usuarios/me/foto",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "archivo",
+                  "type": "file",
+                  "src": "imagen-prueba.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Perfil sin token → 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/usuarios/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Admin: categorías y artesanías (endpoints 14 a 22 y 27)",
+      "description": "",
+      "item": [
+        {
+          "name": "Todas las categorías [14]",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/categorias"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear categoría [15]",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/categorias",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Postman {{$timestamp}}\",\n  \"descripcion\": \"Categoría de prueba\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.environment.set(\"categoriaId\", r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar categoría [16]",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/categorias/{{categoriaId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Postman {{$timestamp}} editada\",\n  \"descripcion\": \"Descripción editada\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear artesanía [19]",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/artesanias",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoriaId\": {{categoriaId}},\n  \"nombre\": \"Vasija Postman\",\n  \"descripcion\": \"Vasija de greda creada desde Postman\",\n  \"materialesTecnica\": \"Greda de Pomaire\",\n  \"precioBase\": 15000,\n  \"stock\": 10\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.environment.set(\"artesaniaId\", r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar artesanía [20]",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/artesanias/{{artesaniaId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoriaId\": {{categoriaId}},\n  \"nombre\": \"Vasija Postman\",\n  \"descripcion\": \"Vasija de greda creada desde Postman\",\n  \"materialesTecnica\": \"Greda de Pomaire\",\n  \"precioBase\": 14500,\n  \"stock\": 10\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Todas las artesanías [18]",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/artesanias"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Subir imagen de la artesanía [22]",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/artesanias/{{artesaniaId}}/imagen",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "archivo",
+                  "type": "file",
+                  "src": "imagen-prueba.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "pm.environment.set(\"imagenUrl\", r.imagenUrl);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ver la imagen [27]",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}{{imagenUrl}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Desactivar categoría con artesanías activas → 409",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/categorias/{{categoriaId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 409\", () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cliente en ruta de admin → 403",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenCliente}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/artesanias"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Catálogo público (endpoints 6 a 8)",
+      "description": "",
+      "item": [
+        {
+          "name": "Categorías activas [6]",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/categorias"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Artesanías activas [7]",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/artesanias"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar por categoría y texto [7]",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/artesanias?categoriaId={{categoriaId}}&q=vasija"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Encuentra la vasija\", () => pm.expect(pm.response.json().length).to.eql(1));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Detalle de una artesanía [8]",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/artesanias/{{artesaniaId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Artesanía inexistente → 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/artesanias/999999"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. Pedidos del cliente (endpoints 9 a 13)",
+      "description": "",
+      "item": [
+        {
+          "name": "Generar pedido [9]",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenCliente}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"artesaniaId\": {{artesaniaId}},\n      \"cantidad\": 2\n    }\n  ],\n  \"direccionDespacho\": \"Av. Siempre Viva 123\",\n  \"comunaDespacho\": \"Providencia\",\n  \"notas\": \"Envolver para regalo\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.environment.set(\"pedidoId\", r.id);",
+                  "pm.test(\"Queda GENERADA con total del servidor\", () => {",
+                  "  pm.expect(r.estado).to.eql(\"GENERADA\");",
+                  "  pm.expect(r.total).to.eql(2 * 14500);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pedido sin stock → 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenCliente}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"artesaniaId\": {{artesaniaId}},\n      \"cantidad\": 999\n    }\n  ],\n  \"direccionDespacho\": \"Av. Siempre Viva 123\",\n  \"comunaDespacho\": \"Providencia\",\n  \"notas\": \"Envolver para regalo\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 409\", () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mis pedidos [10]",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenCliente}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos/mis-pedidos"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Detalle de mi pedido [11]",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenCliente}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos/{{pedidoId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pagar pedido [12]",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenCliente}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos/{{pedidoId}}/pagar"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Queda PAGADA\", () => pm.expect(pm.response.json().estado).to.eql(\"PAGADA\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Generar segundo pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenCliente}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"artesaniaId\": {{artesaniaId}},\n      \"cantidad\": 1\n    }\n  ],\n  \"direccionDespacho\": \"Av. Siempre Viva 123\",\n  \"comunaDespacho\": \"Providencia\",\n  \"notas\": \"Envolver para regalo\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.environment.set(\"pedido2Id\", r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancelar pedido [13]",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenCliente}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos/{{pedido2Id}}/cancelar"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancelar otra vez → 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenCliente}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos/{{pedido2Id}}/cancelar"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 409\", () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Generar tercer pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenCliente}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"artesaniaId\": {{artesaniaId}},\n      \"cantidad\": 1\n    }\n  ],\n  \"direccionDespacho\": \"Av. Siempre Viva 123\",\n  \"comunaDespacho\": \"Providencia\",\n  \"notas\": \"Envolver para regalo\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.environment.set(\"pedido3Id\", r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pagar tercer pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenCliente}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos/{{pedido3Id}}/pagar"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "La admin no compra → 403",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"artesaniaId\": {{artesaniaId}},\n      \"cantidad\": 1\n    }\n  ],\n  \"direccionDespacho\": \"Av. Siempre Viva 123\",\n  \"comunaDespacho\": \"Providencia\",\n  \"notas\": \"Envolver para regalo\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "6. Admin: pedidos (endpoints 23 a 26)",
+      "description": "",
+      "item": [
+        {
+          "name": "Pedidos pagados [23]",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/pedidos?estado=PAGADA"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Detalle con datos del cliente [24]",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/pedidos/{{pedidoId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Trae al cliente\", () => pm.expect(pm.response.json().cliente).to.have.property(\"email\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Transición inválida PAGADA → FINALIZADA → 409",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/pedidos/{{pedidoId}}/estado",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"FINALIZADA\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 409\", () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Marcar como RECIBIDA [25]",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/pedidos/{{pedidoId}}/estado",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"RECIBIDA\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pasar a EN_PREPARACION [25]",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/pedidos/{{pedidoId}}/estado",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"EN_PREPARACION\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Marcar como FINALIZADA [25]",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/pedidos/{{pedidoId}}/estado",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"FINALIZADA\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar tercer pedido (repone stock) [25]",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/pedidos/{{pedido3Id}}/estado",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"RECHAZADA\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Resumen por estado [26]",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/resumen"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "7. Limpieza: borrado lógico (endpoints 21 y 17)",
+      "description": "",
+      "item": [
+        {
+          "name": "Desactivar artesanía [21]",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/artesanias/{{artesaniaId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 204\", () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Desactivar categoría [17]",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/categorias/{{categoriaId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 204\", () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "La artesanía ya no está en el catálogo → 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/artesanias/{{artesaniaId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Responde 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -10,6 +10,7 @@ Equipo: Emanuel Reyes (planificación y diseño) · Jim Charles (desarrollo).
 ale-y-leo/
 ├── app/       App Android (Kotlin, Jetpack Compose, Material 3, MVVM, Room, Navigation, lector QR)
 ├── backend/   API REST (Spring Boot 3 en Kotlin, MySQL, JWT)
+├── postman/   Colección de Postman con los 27 endpoints (ver postman/README.md)
 └── qr/        Códigos QR de prueba para el lector de la app
 ```
 
